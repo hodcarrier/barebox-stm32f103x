@@ -1,0 +1,54 @@
+#!/bin/sh
+
+export PATH=/env/bin
+
+global hostname=generic
+global user=none
+global autoboot_timeout=3
+global boot.default=net
+global allow_color=true
+global linux.bootargs.base
+#linux.bootargs.dyn.* will be cleared at the beginning of boot
+global linux.bootargs.dyn.ip
+global linux.bootargs.dyn.root
+global editcmd=sedit
+
+[ -e /env/config-board ] && /env/config-board
+/env/config
+
+# allow to stop the boot before execute the /env/init/*
+# but without waiting
+timeout -s -a -v key 0
+
+if [ "${key}" = "q" ]; then
+	exit
+fi
+
+for i in /env/init/*; do
+	. $i
+done
+
+if [ -e /env/menu ]; then
+	echo -e -n "\nHit m for menu or any other key to stop autoboot: "
+else
+	echo -e -n "\nHit any key to stop autoboot: "
+fi
+
+timeout -a $global.autoboot_timeout -v key
+autoboot="$?"
+
+if [ "${key}" = "q" ]; then
+	exit
+fi
+
+if [ "$autoboot" = 0 ]; then
+	boot
+fi
+
+if [ -e /env/menu ]; then
+	if [ "${key}" != "m" ]; then
+		echo -e "\ntype exit to get to the menu"
+		sh
+	fi
+	/env/menu/mainmenu
+fi

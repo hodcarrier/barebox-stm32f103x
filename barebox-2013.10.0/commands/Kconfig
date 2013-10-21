@@ -1,0 +1,764 @@
+config REGINFO
+	bool
+
+config COMMAND_SUPPORT
+	bool
+	depends on !SHELL_NONE
+	default y
+
+config HAS_POWEROFF
+	bool
+	default n
+
+if COMMAND_SUPPORT
+
+menu "commands"
+
+menu "scripting"
+
+config CMD_EDIT
+	tristate
+	prompt "edit"
+
+config CMD_EXEC
+	depends on !SHELL_HUSH
+	tristate
+	prompt "exec"
+
+config CMD_SLEEP
+	tristate
+	prompt "sleep"
+
+config CMD_MSLEEP
+	tristate
+	prompt "msleep"
+
+config CMD_SAVEENV
+	tristate
+	select ENV_HANDLING
+	prompt "saveenv"
+
+config CMD_LOADENV
+	tristate
+	select ENV_HANDLING
+	prompt "loadenv"
+
+config CMD_EXPORT
+	depends on ENVIRONMENT_VARIABLES
+	tristate
+	prompt "export"
+
+config CMD_PRINTENV
+	tristate
+	depends on ENVIRONMENT_VARIABLES
+	prompt "printenv"
+
+config CMD_READLINE
+	tristate
+	prompt "readline"
+
+config CMD_LET
+	tristate
+	prompt "let"
+	help
+	  the 'let' command is used for arithmetics. It works like the corresponding
+	  Unix shell command.
+
+config CMD_TRUE
+	tristate
+	default y
+	prompt "true"
+
+config CMD_FALSE
+	tristate
+	default y
+	prompt "false"
+
+config CMD_MENU
+	tristate
+	depends on MENU
+	prompt "menu"
+
+config CMD_MENU_MANAGEMENT
+	bool
+	depends on CMD_MENU
+	prompt "menu scripts management"
+
+config CMD_LOGIN
+	tristate
+	select PASSWORD
+	prompt "login"
+
+config CMD_PASSWD
+	tristate
+	select CMD_LOGIN
+	prompt "passwd"
+
+if CMD_LOGIN || CMD_PASSWD
+
+choice
+	prompt "passwd mode"
+
+config PASSWD_MODE_HIDE
+	bool "Hide"
+
+config PASSWD_MODE_STAR
+	bool "Star"
+
+config PASSWD_MODE_CLEAR
+	bool "Clear"
+
+endchoice
+
+endif
+
+config CMD_TIME
+	bool "time"
+	help
+	  Just like the unix time command this command allows to measure the
+	  execution time of a command. Note: barebox does not use interrupts,
+	  so the system timer can overrun during the execution of the command
+	  resulting in incorrect results. The timer gets updated in the function
+	  checking for ctrl-c, so the time command can be used with commands
+	  which are interruptible with ctrl-c.
+
+config CMD_LINUX_EXEC
+	bool "linux exec"
+	depends on LINUX
+	help
+	  This command executes a command on the Linux host.
+
+config CMD_GLOBAL
+	select GLOBALVAR
+	tristate
+	prompt "global"
+	help
+	  The global command allows to create global variables
+
+endmenu
+
+menu "file commands"
+
+config CMD_LS
+	tristate
+	default y
+	prompt "ls"
+
+config CMD_RM
+	tristate
+	default y
+	prompt "rm"
+
+config CMD_CAT
+	tristate
+	default y
+	prompt "cat"
+
+config CMD_MKDIR
+	tristate
+	default y
+	prompt "mkdir"
+
+config CMD_RMDIR
+	tristate
+	default y
+	prompt "rmdir"
+
+config CMD_CP
+	tristate
+	default y
+	prompt "cp"
+
+config CMD_PWD
+	tristate
+	default y
+	prompt "pwd"
+
+config CMD_CD
+	tristate
+	default y
+	prompt "cd"
+
+config CMD_MOUNT
+	tristate
+	default y
+	prompt "mount"
+
+config CMD_UMOUNT
+	tristate
+	default y
+	prompt "umount"
+
+config CMD_NAND
+	tristate
+	default y
+	depends on NAND
+	prompt "nand"
+
+config CMD_AUTOMOUNT
+	tristate
+	select FS_AUTOMOUNT
+	prompt "automount"
+	help
+	  automount allows it to automatically execute a script when a certain
+	  directory is accessed for the first time. The script should then make
+	  this directory available (discover USB devices, bring network interface
+	  up and finally mount the filesystem).
+
+config CMD_BASENAME
+	tristate
+	prompt "basename"
+	help
+	  Strip directory and suffix from filenames and store the result in a
+	  environment variable
+
+config CMD_DIRNAME
+	tristate
+	prompt "dirname"
+	help
+	  Strip last component of file name and store the result in a
+	  environment variable
+
+config CMD_LN
+	tristate
+	prompt "ln"
+
+config CMD_READLINK
+	tristate
+	prompt "readlink"
+	help
+	  read value of a symbolic link
+
+config CMD_TFTP
+	depends on FS_TFTP
+	tristate
+	prompt "tftp"
+	help
+	  barebox can mount tftp as a filesystem. This command is only needed to
+	  preserve backward compatibility to the old tftp command.
+
+config CMD_FILETYPE
+	tristate
+	select FILETYPE
+	prompt "filetype"
+
+endmenu
+
+menu "console"
+
+config CMD_CLEAR
+	tristate
+	default y
+	prompt "clear"
+
+config CMD_ECHO
+	tristate
+	default y
+	prompt "echo"
+
+config CMD_ECHO_E
+	bool
+	depends on CMD_ECHO
+	select PROCESS_ESCAPE_SEQUENCE
+	prompt "support -e option to echo"
+
+endmenu
+
+menu "memory"
+
+config CMD_LOADB
+	depends on !CONSOLE_NONE
+	select CRC16
+	tristate
+	prompt "loadb"
+
+config CMD_LOADY
+	select CRC16
+	select XYMODEM
+	depends on !CONSOLE_NONE
+	tristate
+	prompt "loady"
+
+config CMD_LOADS
+	depends on !CONSOLE_NONE
+	tristate
+	prompt "loads"
+
+config CMD_SAVES
+	tristate
+	depends on CMD_LOADS
+	prompt "saves"
+
+config CMD_MEMINFO
+	tristate
+	prompt "meminfo"
+
+config CMD_IOMEM
+	tristate
+	prompt "iomem"
+	help
+	  Show information about iomem usage. Pendant to 'cat /proc/iomem'
+	  under Linux.
+
+config CMD_MEMORY
+	bool
+	default y
+
+config CMD_MD
+	tristate
+	default y
+	select CMD_MEMORY
+	prompt "md"
+	help
+	  the md command allows to display (hexdump) memory locations and files.
+
+config CMD_MW
+	tristate
+	default y
+	select CMD_MEMORY
+	prompt "mw"
+	help
+	  the mw command allows to write to memory locations and files.
+
+config CMD_MM
+	tristate
+	select CMD_MEMORY
+	prompt "memory modify (mm)"
+	help
+	  the mm command allows to read-modify-write registers by doing:
+	  reg = (reg & ~mask) | (val & mask)
+
+config CMD_MEMCMP
+	tristate
+	default y
+	select CMD_MEMORY
+	prompt "memcmp"
+	help
+	  the memcmp command allows to compare memory and file regions.
+
+config CMD_MEMCPY
+	tristate
+	default y
+	select CMD_MEMORY
+	prompt "memcpy"
+	help
+	  the memcpy command allows to copy memory and file regions.
+
+config CMD_MEMSET
+	tristate
+	default y
+	select CMD_MEMORY
+	prompt "memset"
+	help
+	  the memset command allows to set regions of memory and files to
+	  a specific value.
+
+config CMD_CRC
+	tristate
+	select CRC32
+	prompt "crc32"
+
+config CMD_CRC_CMP
+	tristate
+	depends on CMD_CRC
+	prompt "compare 2 files using crc32"
+
+config CMD_DIGEST
+	tristate
+	select DIGEST
+
+config CMD_MD5SUM
+	tristate
+	select CMD_DIGEST
+	select MD5
+	prompt "md5sum"
+
+config CMD_SHA1SUM
+	tristate
+	select CMD_DIGEST
+	select SHA1
+	prompt "sha1sum"
+
+config CMD_SHA256SUM
+	tristate
+	select CMD_DIGEST
+	select SHA256
+	prompt "sha256sum"
+
+config CMD_SHA224SUM
+	tristate
+	select CMD_DIGEST
+	select SHA224
+	prompt "sha224sum"
+
+endmenu
+
+menu "flash"
+
+config CMD_FLASH
+	tristate
+	prompt "protect/erase"
+
+config CMD_UBI
+	tristate
+	default y if MTD_UBI
+	depends on MTD_UBI
+	prompt "ubimkvol, ubirmvol, ubiattach"
+
+config CMD_UBIFORMAT
+	tristate
+	depends on MTD_UBI
+	select LIBMTD
+	select LIBSCAN
+	select LIBUBIGEN
+	prompt "ubiformat"
+
+endmenu
+
+menu "booting"
+
+config CMD_BOOTM
+	tristate
+	default y
+	select BOOTM
+	select CRC32
+	select UIMAGE
+	select UNCOMPRESS
+	select FILETYPE
+	select GLOBALVAR
+	prompt "bootm"
+
+config CMD_BOOTM_SHOW_TYPE
+	bool
+	depends on CMD_BOOTM
+	prompt "show image information"
+
+config CMD_BOOTM_VERBOSE
+	bool
+	prompt "bootm verbose support"
+	depends on CMD_BOOTM
+	help
+	  support verbose bootm (-v switch)
+
+config CMD_BOOTM_INITRD
+	bool
+	prompt "bootm initrd support"
+	depends on CMD_BOOTM
+	help
+	  support initrds in bootm
+
+config CMD_BOOTM_OFTREE
+	bool
+	depends on CMD_BOOTM
+	select OFTREE
+	prompt "bootm oftree support"
+	help
+	  say yes here to support passing a flat device tree to the kernel
+
+config CMD_BOOTM_OFTREE_UIMAGE
+	bool
+	prompt "support passing oftree uImages"
+	depends on CMD_BOOTM_OFTREE
+	help
+	  Support using oftree uImages. Without this only raw oftree
+	  blobs can be used.
+
+config CMD_BOOTM_AIMAGE
+	bool
+	prompt "bootm Android image support"
+	depends on CMD_BOOTM && ARM
+	help
+	  Support using Android Images.
+
+config CMD_UIMAGE
+	select UIMAGE
+	tristate
+	prompt "uimage"
+	help
+	  Show information about uImage and also extract and verify uImages.
+
+config CMD_BOOTZ
+	tristate
+	depends on ARM
+	prompt "bootz"
+	help
+	  compile in the 'bootz' command to start zImages
+
+config CMD_BOOTU
+	tristate
+	default y
+	depends on ARM
+	prompt "bootu"
+	help
+	  compile in the 'bootu' command to start raw (uncompressed)
+	  Linux images
+
+config FLEXIBLE_BOOTARGS
+	bool
+	prompt "flexible Linux bootargs generation"
+	depends on CMD_GLOBAL
+	help
+	  Select this to get a more flexible bootargs generation. With this
+	  option the bootargs are concatenated together from global variables
+	  beginning with 'global.linux.bootargs.' and 'global.linux.mtdparts.'
+	  This allows for more flexible scripting since with it it's possible
+	  to replace parts of the bootargs string without reconstructing it
+	  completely
+
+config CMD_LINUX16
+	tristate
+	depends on X86
+	default y if X86
+	prompt "linux16"
+	help
+	  Compile the linux16 command to be able to boot bzImages
+	  via real mode.
+
+config CMD_RESET
+	tristate
+	prompt "reset"
+
+config CMD_POWEROFF
+	tristate
+	depends on HAS_POWEROFF
+	prompt "poweroff"
+
+config CMD_GO
+	tristate
+	prompt "go"
+
+config CMD_OFTREE
+	tristate
+	select OFTREE
+	prompt "oftree"
+	help
+	  The oftree command has support for dumping devicetrees and, if
+	  enabled, to probe devices from the devicetree
+
+config CMD_OF_PROPERTY
+	tristate
+	select OFTREE
+	prompt "of_property"
+	help
+	  The of_property command allows setting and deleting of properties in
+	  the currently loaded devicetree.
+
+config CMD_OF_NODE
+	tristate
+	select OFTREE
+	prompt "of_node"
+	help
+	  The of_property command allows adding and removing devicetree nodes.
+
+endmenu
+
+menu "testing"
+
+config CMD_NANDTEST
+	tristate
+	depends on NAND
+	depends on PARTITION
+	depends on NAND_ECC_HW || NAND_ECC_SOFT
+	select PARTITION_NEED_MTD
+	prompt "nandtest"
+
+config CMD_MEMTEST
+	tristate
+	prompt "memtest"
+	help
+	  The memtest command can test the registered barebox memory.
+	  During this test barebox memory regions like heap, stack, ...
+	  will be skipped. If the tested architecture has MMU with PTE
+	  flags support, the memtest is running twice with cache enabled
+	  and with cache disabled
+
+endmenu
+
+menu "video command"
+
+if VIDEO
+
+config CMD_SPLASH
+	bool
+	select IMAGE_RENDERER
+	prompt "splash"
+	help
+	  show bmp files on framebuffer devices
+
+endif
+
+endmenu
+
+config CMD_BAREBOX_UPDATE
+	tristate
+	select BAREBOX_UPDATE
+	prompt "barebox-update"
+
+config CMD_TIMEOUT
+	tristate
+	prompt "timeout"
+
+config CMD_PARTITION
+	tristate
+	prompt "addpart/delpart"
+
+config CMD_TEST
+	tristate
+	depends on SHELL_HUSH
+	default y
+	prompt "test"
+	help
+	  shell like test function
+
+config CMD_REGINFO
+	depends on HAS_REGINFO
+	select REGINFO
+	tristate
+	prompt "reginfo"
+
+config CMD_VERSION
+	tristate
+	default y
+	depends on BANNER
+	prompt "version"
+
+config CMD_HELP
+	tristate
+	default y
+	prompt "help"
+
+config CMD_MAGICVAR
+	tristate
+	prompt "magicvar"
+	help
+	  barebox has some shell variables with special meanings. This
+	  command shows the available magic variables.
+
+config CMD_MAGICVAR_HELP
+	bool
+	prompt "display description"
+	depends on CMD_MAGICVAR
+	help
+	  Also display a description to the magic variables
+
+config CMD_DEVINFO
+	tristate
+	default y
+	prompt "devinfo"
+
+config CMD_INSMOD
+	bool
+	depends on MODULES
+	default y
+	prompt "insmod"
+
+config CMD_LSMOD
+	bool
+	depends on MODULES
+	prompt "lsmod"
+
+config CMD_GPIO
+	bool
+	depends on GENERIC_GPIO
+	prompt "gpio commands"
+	help
+	  include gpio_set_value, gpio_get_value, gpio_direction_input and
+	  gpio_direction_output commands to control gpios.
+
+config CMD_UNCOMPRESS
+	bool
+	select UNCOMPRESS
+	prompt "uncompress"
+	help
+	  Say yes here to get the uncompress command. uncompress handles
+	  lzo, gzip and bzip2 compressed files depending on the compiled
+	  in compression libraries
+
+config CMD_I2C
+	bool
+	depends on I2C
+	prompt "i2c commands"
+	help
+	  include i2c_probe, i2c_read and i2c_write commands to communicate
+	  on i2c bus.
+
+config CMD_SPI
+	bool
+	depends on SPI
+	prompt "spi command"
+	help
+
+config CMD_LED
+	bool
+	depends on LED
+	prompt "led command"
+	help
+	  include led command to control LEDs
+
+config CMD_LED_TRIGGER
+	bool
+	depends on LED_TRIGGERS
+	prompt "trigger command"
+	help
+	  The trigger command allows to control LED triggers from the command
+	  line.
+
+config CMD_USB
+	bool
+	depends on USB
+	prompt "usb command"
+	default y
+	help
+	  The usb command allows to rescan for USB devices.
+
+config CMD_MIITOOL
+	tristate
+	depends on PHYLIB
+	prompt "miitool"
+	help
+	  The miitool command allows to view media-independent interface status.
+	  The default short output reports the negotiated link speed and
+	  link status for selected MII. The '-v' option displays more
+	  detailed MII status information, such as MII capabilities,
+	  current advertising mode, and link partner capabilities.
+
+config CMD_CLK
+	tristate
+	depends on COMMON_CLK
+	prompt "clock manipulation commands"
+	help
+	  Say yes here to get clk_set_rate, clk_set_parent and clk_dump
+	  commands to manipulate clocks on your system.
+
+config CMD_DETECT
+	tristate
+	prompt "detect"
+	help
+	  say yes here to get the 'detect' command. Some devices take longer
+	  time to probe, like slow disks or SD/MMC cards. These can defer the
+	  actual probe of the client devices until they are needed. Use the
+	  'detect' command on the physical device to trigger probing.
+
+menuconfig CMD_WD
+	bool
+	depends on WATCHDOG
+	prompt "wd command"
+	help
+	  The 'wd' command which allows to start, stop and trigger the onboard
+	  watchdog.
+
+if CMD_WD
+
+config CMD_WD_DEFAULT_TIMOUT
+	int
+	default 0
+	prompt "default timeout"
+	help
+	  Define the default timeout value in [seconds] if the first call of
+	  'wd' is done without a timeout value (which means the watchdog gets
+	  enabled and re-triggered with the default timeout value).
+endif
+
+endmenu
+
+endif

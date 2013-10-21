@@ -1,0 +1,17 @@
+menuconfig USB
+	bool "USB support"
+
+if USB
+
+source drivers/usb/imx/Kconfig
+
+source drivers/usb/host/Kconfig
+
+source drivers/usb/otg/Kconfig
+
+source drivers/usb/storage/Kconfig
+
+endif
+
+source drivers/usb/gadget/Kconfig
+

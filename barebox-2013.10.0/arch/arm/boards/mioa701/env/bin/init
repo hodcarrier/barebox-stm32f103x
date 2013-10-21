@@ -1,0 +1,40 @@
+#!/bin/sh
+
+PATH=/env/bin
+export PATH
+
+. /env/config
+addpart /dev/mtd0 $mtdparts
+
+usbserial -s "Mio A701 usb gadget"
+led keyboard 0
+
+sdcard_override
+
+fb0.enable=1
+splash /dev/mtd0.barebox-logo
+
+mtd_env_override
+if [ $? = 0 ]; then
+    echo "Switching to custom environment"
+    /env/init
+    exit
+fi
+
+echo "No custom environment found"
+
+gpio_get_value 22
+is_usb_connected=$?
+if [ $is_usb_connected != 0 ]; then
+	echo -n "Hit any key to stop autoboot: "
+	timeout -a $autoboot_timeout
+	if [ $? != 0 ]; then
+		echo
+		echo "Welcome to barebox console"
+		exit
+	fi
+fi
+
+echo "Booting linux kernel on docg3 chip ..."
+bootargs="$bootargs mtdparts=docg3.0:$mtdparts ubi.mtd=4 rootfstype=ubifs root=ubi0:linux_root ro"
+bootm /dev/mtd0.kernel
