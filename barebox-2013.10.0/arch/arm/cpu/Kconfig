@@ -47,6 +47,14 @@ config CPU_FEROCEON
 	  This is a Marvell implementation of an ARMv5TE compatible
 	  ARM core, used in the Marvell Kirkwood SoC family.
 
+# STM32
+config CPU_STM32
+	bool
+	select CPU_V7M
+	help
+	  This is a Marvell implementation of an ARMv5TE compatible
+	  ARM core, used in the Marvell Kirkwood SoC family.
+
 # ARMv6
 config CPU_V6
 	bool
@@ -56,6 +64,11 @@ config CPU_V6
 config CPU_V7
 	bool
 	select CPU_32v7
+
+# ARMv7m
+config CPU_V7M
+	bool
+	select CPU_32v7m
 
 # Xscale PXA25x, PXA27x
 config CPU_XSCALE
@@ -74,6 +87,9 @@ config CPU_32v6
 	bool
 
 config CPU_32v7
+	bool
+
+config CPU_32v7m
 	bool
 
 comment "processor features"

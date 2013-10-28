@@ -5,10 +5,10 @@
 .section ".text_bare_init_","ax"
 ENTRY(arm_cpu_lowlevel_init)
 	/* set the cpu to SVC32 mode */
-	mrs	r12, cpsr
+@	mrs	r12, cpsr
 	bic	r12, r12, #0x1f
 	orr	r12, r12, #0xd3
-	msr	cpsr, r12
+@	msr	cpsr, r12
 
 #if __LINUX_ARM_ARCH__ >= 7
 	isb

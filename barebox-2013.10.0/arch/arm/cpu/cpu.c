@@ -96,6 +96,7 @@ void mmu_disable(void)
  */
 void arch_shutdown(void)
 {
+#if !CONFIG_STM32F10X_PORT_STATUS
 	uint32_t r;
 
 	mmu_disable();
@@ -108,6 +109,7 @@ void arch_shutdown(void)
 	__asm__ __volatile__("mrs %0, cpsr" : "=r"(r));
 	r |= PSR_I_BIT;
 	__asm__ __volatile__("msr cpsr, %0" : : "r"(r));
+#endif
 }
 
 extern unsigned long arm_stack_top;

@@ -1,0 +1,62 @@
+if ARCH_STM32F10X
+
+config STM32F10X_PORT_STATUS
+	hex
+	default 0xFFFFFFFF
+choice
+	prompt "stm32f10x processor type"
+
+config ARCH_STM32F10X_HD
+	select CPU_STM32
+	bool "STM32F10x High Density Devices"
+
+config ARCH_STM32F10X_MD
+	bool "STM32F10x Medium Density Devices"
+
+endchoice
+
+choice
+	prompt "STM32F10x debug UART"
+	help
+	  This is the first serial console that gets activated by barebox.
+	  Normally each board vendor should program a valid debug UART into
+	  the ODMdata section of the boot configuration table, so it's a
+	  reasonably good bet to use that.
+	  If you know your ODMdata is broken, or you don't wish to activate
+	  any serial console at all you can override the default here.
+
+config STM32F10X_UART_ODMDATA
+	bool "ODMdata defined UART"
+
+config STM32F10X_USART_A
+	bool "UART A"
+
+config STM32F10X_UART_B
+	bool "UART B"
+
+config STM32F10X_USART_C
+	bool "UART C"
+
+config STM32F10X_USART_D
+	bool "UART D"
+
+config STM32F10X_UART_NONE
+	bool "None"
+
+endchoice
+
+# ---------------------------------------------------------
+
+if ARCH_STM32F10X
+
+config ARCH_TEXT_BASE
+	hex
+	default 0x08000000 
+endif
+
+# ---------------------------------------------------------
+config MACH_STM3210E_LK
+	bool "STM3210E-LK Board"
+	default y
+
+endif # ARCH_MACH_STM32F10X

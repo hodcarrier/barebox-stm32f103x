@@ -1,6 +1,11 @@
 obj-y += cpu.o
+ifdef CONFIG_CPU_32v7m
+obj-$(CONFIG_ARM_EXCEPTIONS) += exceptions-cortex-m3.o
+obj-$(CONFIG_ARM_EXCEPTIONS) += interrupts-cortex-m3.o
+else
 obj-$(CONFIG_ARM_EXCEPTIONS) += exceptions.o
 obj-$(CONFIG_ARM_EXCEPTIONS) += interrupts.o
+endif
 obj-y += start.o setupc.o
 
 #

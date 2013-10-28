@@ -135,6 +135,14 @@ config ARCH_S3C64xx
 	select CPU_V6
 	select GENERIC_GPIO
 
+config ARCH_STM32F10X
+	bool "STMicroelectronics STM32F10x (Cortex-M3)"
+	select HAS_DEBUG_LL
+	select HAVE_MACH_ARM_HEAD
+	select CPU_STM32
+	select CPU_V7M
+	select THUMB2_BAREBOX
+	
 config ARCH_VERSATILE
 	bool "ARM Versatile boards (ARM926EJ-S)"
 	select CPU_ARM926T
@@ -183,6 +191,7 @@ source arch/arm/mach-nomadik/Kconfig
 source arch/arm/mach-omap/Kconfig
 source arch/arm/mach-pxa/Kconfig
 source arch/arm/mach-samsung/Kconfig
+source arch/arm/mach-stm32f10x/Kconfig
 source arch/arm/mach-versatile/Kconfig
 source arch/arm/mach-vexpress/Kconfig
 source arch/arm/mach-tegra/Kconfig
@@ -202,7 +211,7 @@ config AEABI
 config THUMB2_BAREBOX
 	select ARM_ASM_UNIFIED
 	select AEABI
-	depends on CPU_V7
+	depends on CPU_V7 || CPU_V7M
 	bool "Compile barebox in thumb-2 mode (read help)"
 	help
 	  This enables compilation of barebox in thumb-2 mode which generates

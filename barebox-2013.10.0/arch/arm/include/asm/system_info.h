@@ -13,6 +13,7 @@
 #define CPU_ARCH_ARMv5TEJ	7
 #define CPU_ARCH_ARMv6		8
 #define CPU_ARCH_ARMv7		9
+#define CPU_ARCH_ARMv7M		10
 
 #define CPU_IS_ARM720		0x41007200
 #define CPU_IS_ARM720_MASK	0xff00fff0
@@ -34,6 +35,9 @@
 
 #define CPU_IS_CORTEX_A9	0x410fc090
 #define CPU_IS_CORTEX_A9_MASK	0xff0ffff0
+
+#define CPU_IS_CORTEX_M3	0x00000000
+#define CPU_IS_CORTEX_M3_MASK	0x00000000
 
 #define CPU_IS_CORTEX_A7	0x410fc070
 #define CPU_IS_CORTEX_A7_MASK	0xff0ffff0
@@ -110,6 +114,23 @@
 #define cpu_is_cortex_a9() (0)
 #define cpu_is_cortex_a7() (0)
 #define cpu_is_cortex_a15() (0)
+#endif
+
+#ifdef CONFIG_CPU_32v7m
+#ifdef ARM_ARCH
+#define ARM_MULTIARCH
+#else
+#define ARM_ARCH CPU_ARCH_ARMv7M
+#endif
+#define cpu_is_cortex_m1() cpu_is_arm(CORTEX_M1)
+#define cpu_is_cortex_m2() cpu_is_arm(CORTEX_M2)
+#define cpu_is_cortex_m3() (0x12345678)
+#define cpu_is_cortex_m4() cpu_is_arm(CORTEX_M4)
+#else
+#define cpu_is_cortex_m1() (0)
+#define cpu_is_cortex_m2() (0)
+#define cpu_is_cortex_m3() (0)
+#define cpu_is_cortex_m4() (0)
 #endif
 
 #ifndef __ASSEMBLY__
